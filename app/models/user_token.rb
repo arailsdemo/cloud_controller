@@ -1,4 +1,6 @@
 class UserToken
+  class DecodeError < ArgumentError;end
+
   class << self
     attr_accessor :token_key
 
@@ -6,9 +8,19 @@ class UserToken
       valid_until = (Time.now.utc + 1.week).to_i
       new(username, valid_until)
     end
+
+    def decode(string)
+      username, time, decoded_hmac = Marshal.load([string].pack('H*'))
+      token = new(username, time)
+      token.decoded_hmac = decoded_hmac.to_s
+      token
+    rescue Exception
+      raise DecodeError, "Invalid UserToken data"
+    end
   end
 
   attr_reader :username, :valid_until
+  attr_accessor :decoded_hmac
 
   def initialize(name, time)
     @username = name

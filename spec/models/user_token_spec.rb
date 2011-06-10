@@ -10,6 +10,23 @@ describe UserToken do
     end
   end
 
+  describe ".decode" do
+    it "returns a token from a string" do
+      UserToken.should_receive(:token_key) { 'abc' }
+      existing_token = klass.new('foo@bar.com', Time.new(2011))
+      string = Yajl::Parser.new.parse(existing_token.to_json)["token"]
+      token = klass.decode(string)
+
+      token.username.should == existing_token.username
+      token.valid_until.should == existing_token.valid_until
+      token.decoded_hmac.should == existing_token.hmac
+    end
+
+    it "raises a ArgumentError when the token data is invalid " do
+      expect { klass.decode('...') }.to raise_error ArgumentError
+    end
+  end
+
    describe "#to_json" do
     it "encodes and converts the token to json" do
       UserToken.should_receive(:token_key) { 'abc' }
