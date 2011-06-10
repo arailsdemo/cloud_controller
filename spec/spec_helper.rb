@@ -17,6 +17,7 @@ end
 
 Spork.each_run do
   require 'factory_girl_rails'
+  Dir[Rails.root.join("lib/**/*.rb")].each {|f| require f}
 end
 
 
