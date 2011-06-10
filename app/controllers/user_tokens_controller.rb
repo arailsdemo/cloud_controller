@@ -5,7 +5,7 @@ class UserTokensController < ApplicationController
       token = UserToken.create(email)
       render :json => token
     else
-      render :status => 403, :json => { "code" => 200, "description" => "Operation not permitted" }
+      raise CloudError.new(CloudError::FORBIDDEN)
     end
   end
 end
